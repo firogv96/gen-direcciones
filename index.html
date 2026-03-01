@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">Buscador de Dirección por Coordenadas</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png" />
+    <link rel="manifest" href="assets/favicon/site.webmanifest" />
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <div class="panel-container">
+      <header>
+        <div class="icon-container">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h1 id="header-title">Buscador de Direcciones</h1>
+          <p id="header-subtitle">Introduce coordenadas o haz clic en el mapa</p>
+        </div>
+      </header>
+
+      <main>
+        <div class="input-group">
+          <label for="coords-input" id="label-coords">Coordenadas (Lat, Lng)</label>
+          <div class="input-wrapper">
+            <div class="input-box">
+              <input
+                type="text"
+                id="coords-input"
+                placeholder="Ej: 40.4168, -3.7038"
+              />
+              <button
+                id="clear-input-btn"
+                class="clear-input-btn"
+                aria-label="Limpiar"
+                title="Limpiar"
+                style="display: none;"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <button
+              id="search-btn"
+              aria-label="Buscar"
+              title="Buscar coordenadas"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="margin-right: 6px;"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span id="search-text">Buscar</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="result-box" id="result-box">
+          <span class="label" id="label-address">Dirección postal</span>
+          <div class="loader" id="loader" style="display: none"></div>
+          <p id="address-output" class="placeholder">
+            Selecciona un punto en el mapa o introduce coordenadas.
+          </p>
+          <button id="copy-btn" class="copy-btn" title="Copiar dirección" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="regional-format-toggle">
+          <input type="checkbox" id="regional-format-cb" checked>
+          <label for="regional-format-cb" id="label-regional">Respetar formato regional</label>
+        </div>
+
+        <div class="coordinates-info">
+          <div class="coord-item">
+            <span class="coord-label">Lat:</span>
+            <span id="lat-output" class="coord-val">--</span>
+          </div>
+          <div class="coord-item">
+            <span class="coord-label">Lng:</span>
+            <span id="lng-output" class="coord-val">--</span>
+          </div>
+          <button id="copy-coords-btn" class="copy-coords-btn" title="Copiar coordenadas" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Dirección copiada</div>
+
+    <!-- Options Menu -->
+    <div class="options-menu-container">
+      <button id="locate-btn" class="options-btn" aria-label="Mi ubicación" title="Mi ubicación">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+      </button>
+      <button id="options-btn" class="options-btn" aria-label="Opciones" title="Opciones">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="1"></circle>
+          <circle cx="12" cy="5" r="1"></circle>
+          <circle cx="12" cy="19" r="1"></circle>
+        </svg>
+      </button>
+      <div id="options-dropdown" class="options-dropdown">
+        <button id="lang-toggle-btn" class="dropdown-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span id="lang-toggle-text">English</span>
+        </button>
+        <button id="theme-toggle-btn" class="dropdown-item">
+          <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <span id="theme-toggle-text">Modo Oscuro</span>
+        </button>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-info">
+          <p><strong id="info-author">Autor:</strong> Firo</p>
+          <p>firogv96@outlook.com</p>
+          <p><strong id="info-version">Versión:</strong> v2.0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <!-- Custom JS -->
+    <script type="module" src="js/script.js"></script>
+  </body>
+</html>

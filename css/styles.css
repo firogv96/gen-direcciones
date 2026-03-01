@@ -1,0 +1,641 @@
+/* Map tiles dark mode filter - applies only to tiles, avoiding marker/UI inversion */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .leaflet-layer {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg)
+      saturate(0.3) brightness(0.7);
+  }
+}
+html[data-theme="dark"] .leaflet-layer {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3)
+    brightness(0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  color: var(--text-primary);
+  background-color: var(--bg-color);
+}
+
+main {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Map Container */
+#map {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Make Leaflet controls stay behind our panel on mobile avoiding overlaps if needed */
+.leaflet-control-container {
+  z-index: 2;
+}
+
+/* Panel Layout */
+.panel-container {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background-color: var(--panel-bg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  z-index: var(--z-index-panel);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease,
+    color 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  width: 25vw;
+  min-width: 226px;
+}
+
+@media (max-width: 600px) {
+  .panel-container {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    box-shadow: 0 -10px 25px -5px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  /* Slightly move Leaflet UI up if on mobile so it's not hidden */
+  .leaflet-bottom {
+    bottom: 350px !important;
+  }
+}
+
+/* Header */
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  gap: 16px;
+  min-width: 0;
+}
+
+.icon-container {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+header h1 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: 2px;
+}
+
+header p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* Inputs */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-box input {
+  padding-right: 36px;
+  width: 100%;
+}
+
+.clear-input-btn {
+  position: absolute;
+  right: 8px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.clear-input-btn:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 42px;
+  border-radius: var(--border-radius-md);
+  border: none;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+  padding: 0 12px;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* Result Box */
+.result-box {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.result-box .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.regional-format-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.regional-format-toggle label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.regional-format-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  flex: none;
+}
+
+#address-output {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.placeholder {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-weight: 400 !important;
+}
+
+/* Secondary info */
+.coordinates-info {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.coord-item {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  background-color: var(--input-bg);
+  padding: 10px 12px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.coord-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.coord-val {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy-coords-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 0;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.copy-coords-btn:hover {
+  background-color: var(--bg-color);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Loader */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-secondary);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes rotation {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Custom map popups & UI styling for Leaflet */
+.leaflet-popup-content-wrapper {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.leaflet-popup-tip {
+  background-color: var(--bg-color);
+}
+
+/* Custom Marker */
+.custom-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--text-primary);
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.marker-pin::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  margin: 8px 0 0 8px;
+  background: var(--bg-color);
+  position: absolute;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.custom-div-icon:hover .marker-pin {
+  transform: rotate(-45deg) scale(1.1);
+  background-color: var(--text-secondary);
+}
+
+.marker-pulse {
+  background: var(--text-primary);
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 11px 0px 0px -7px;
+  z-index: -2;
+  box-shadow: 0 0 1px 2px var(--text-primary);
+  animation: pulsate 1.5s ease-out infinite;
+}
+
+.custom-div-icon:active .marker-pin {
+  transform: rotate(-45deg) scale(0.95);
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Copy button */
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+
+.copy-btn:hover {
+  background-color: var(--bg-color);
+  color: var(--primary);
+  border-color: var(--border-color);
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: var(--text-primary);
+  color: var(--bg-color);
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition:
+    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Options Menu */
+.options-menu-container {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: var(--z-index-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Separación entre el botón de locate y el menú principal */
+}
+
+/* Locate botón posicionado encima por defecto via DOM order */
+
+.options-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--panel-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.options-btn:hover {
+  background-color: var(--input-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Dropdown styling */
+.options-dropdown {
+  position: absolute;
+  /* Posicionado al lado y arriba por desktop defaults */
+  bottom: 0;
+  left: 100%;
+  margin-left: 8px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 8px 0;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.options-dropdown.show {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0;
+  height: auto;
+}
+
+.dropdown-item:hover {
+  background-color: var(--input-bg);
+  transform: none;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 6px 0;
+}
+
+.dropdown-info {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.dropdown-info p {
+  margin: 0;
+}
+
+.dropdown-info strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .options-menu-container {
+    top: 16px;
+    left: 16px;
+    bottom: auto;
+    right: auto;
+    flex-direction: column-reverse; /* En móvil, el botón principal va arriba, los de utilidad quedan abajo de él */
+  }
+
+  .options-dropdown {
+    top: 0; /* Align with top of the first button */
+    bottom: auto;
+    left: 100%;
+    right: auto;
+    margin-left: 8px;
+    margin-right: 0;
+    transform: translateX(-10px);
+  }
+}
