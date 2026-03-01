@@ -223,6 +223,20 @@ function initApp() {
     }
   }
 
+  // Info tooltips for mobile devices
+  if (infoIconTooltip) {
+    infoIconTooltip.addEventListener("click", () => {
+      // Show tooltip string in toast for touch devices
+      if (window.innerWidth <= 600) {
+        toast.textContent = translations[currentLang].infoTooltip;
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 5000); // Hide after 5 seconds to give time to read
+      }
+    });
+  }
+
   // State text for selected location data
   let currentGeocodeData = null;
 
@@ -546,10 +560,22 @@ function initApp() {
     optionsDropdown.classList.toggle("show");
   });
 
-  // Close dropdown when clicking outside
+  // Close dropdown and toast when clicking outside
   document.addEventListener("click", (e) => {
     if (!optionsBtn.contains(e.target) && !optionsDropdown.contains(e.target)) {
       optionsDropdown.classList.remove("show");
+    }
+
+    if (toast.classList.contains("show")) {
+      const clickedInfo = infoIconTooltip && infoIconTooltip.contains(e.target);
+      const clickedCopy = copyBtn && copyBtn.contains(e.target);
+      const clickedCopyCoords =
+        copyCoordsBtn && copyCoordsBtn.contains(e.target);
+      const clickedToast = toast.contains(e.target);
+
+      if (!clickedInfo && !clickedCopy && !clickedCopyCoords && !clickedToast) {
+        toast.classList.remove("show");
+      }
     }
   });
 
