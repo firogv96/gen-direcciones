@@ -1,5 +1,7 @@
 # Generador de Direcciones Postales
 
+![Gerenador de Direcciones Postales Preview](assets/preview.png)
+
 Una herramienta web sencilla, minimalista y eficiente que permite generar la dirección postal correspondiente a unas coordenadas geográficas exactas (latitud y longitud), o simplemente seleccionando interactivamente un punto en el mapa.
 
 ## ✨ Características Principales
