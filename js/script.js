@@ -4,6 +4,8 @@ const addressFormatter = pkg.addressFormatter || pkg.default || pkg;
 function initApp() {
   // UI Elements
   const mapElement = document.getElementById("map");
+  const panelContainer = document.querySelector(".panel-container");
+  const collapsePanelBtn = document.getElementById("collapse-panel-btn");
   const coordsInput = document.getElementById("coords-input");
   const searchBtn = document.getElementById("search-btn");
   const addressOutput = document.getElementById("address-output");
@@ -25,6 +27,7 @@ function initApp() {
   const langToggleText = document.getElementById("lang-toggle-text");
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
   const themeToggleText = document.getElementById("theme-toggle-text");
+  const themeIcon = document.getElementById("theme-icon");
 
   // Elements for translation
   const pageTitle = document.getElementById("page-title");
@@ -95,6 +98,18 @@ function initApp() {
       themeToggleText.textContent = isDark ? "Light Mode" : "Dark Mode";
     }
 
+    if (themeIcon) {
+      if (isDark) {
+        // Show sun icon to indicate switch to light mode is available
+        themeIcon.innerHTML =
+          '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      } else {
+        // Show moon icon to indicate switch to dark mode is available
+        themeIcon.innerHTML =
+          '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+    }
+
     // El filtro oscuro del mapa ahora se maneja puramente por CSS
     // para no afectar a los controles de Leaflet ni al marcador personalizado.
   }
@@ -136,6 +151,8 @@ function initApp() {
       infoVersion: "Versión:",
       infoTooltip:
         "Aplica el formato postal específico del país o la información base sin procesamientos locales.",
+      collapsePanel: "Colapsar panel",
+      expandPanel: "Expandir panel",
     },
     en: {
       pageTitle: "Postal Address Generator",
@@ -158,6 +175,8 @@ function initApp() {
       infoVersion: "Version:",
       infoTooltip:
         "Applies the country's specific postal format or the base information returned without local processing.",
+      collapsePanel: "Collapse panel",
+      expandPanel: "Expand panel",
     },
   };
 
@@ -192,6 +211,15 @@ function initApp() {
       // Very basic check, we just set the default one, or try to keep equivalent error
       addressOutput.textContent = t.placeholderAddress;
       currentPlaceholderMsg = t.placeholderAddress;
+    }
+
+    if (collapsePanelBtn) {
+      const isCollapsed = panelContainer.classList.contains("collapsed");
+      collapsePanelBtn.setAttribute(
+        "aria-label",
+        isCollapsed ? t.expandPanel : t.collapsePanel,
+      );
+      collapsePanelBtn.title = isCollapsed ? t.expandPanel : t.collapsePanel;
     }
   }
 
@@ -533,6 +561,27 @@ function initApp() {
         : "dark";
     applyTheme(newTheme);
   });
+
+  // Collapse Panel Event
+  if (collapsePanelBtn) {
+    collapsePanelBtn.addEventListener("click", () => {
+      panelContainer.classList.toggle("collapsed");
+      const isCollapsed = panelContainer.classList.contains("collapsed");
+
+      if (isCollapsed) {
+        document.body.classList.add("panel-collapsed");
+      } else {
+        document.body.classList.remove("panel-collapsed");
+      }
+
+      const t = translations[currentLang];
+      collapsePanelBtn.setAttribute(
+        "aria-label",
+        isCollapsed ? t.expandPanel : t.collapsePanel,
+      );
+      collapsePanelBtn.title = isCollapsed ? t.expandPanel : t.collapsePanel;
+    });
+  }
 
   // Initialize language UI properly on load
   applyLanguage(currentLang);
