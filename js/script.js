@@ -316,19 +316,61 @@ function initApp() {
     }
   }
 
+  function parseCoordinateString(str) {
+    str = str.trim();
+
+    // 1. Basic DD (Decimal Degrees): "40.7128, -74.0060" o separados por espacio
+    const ddRegex = /^(-?\d+(?:\.\d+)?)[,\s]+(-?\d+(?:\.\d+)?)$/;
+    let match = str.match(ddRegex);
+    if (match) {
+      return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+    }
+
+    // 2. DMS (Degrees, Minutes, Seconds) o DDM (Degrees, Decimal Minutes)
+    function parseDMS(part) {
+      const dirMatch = part.match(/[NSEW]/i);
+      if (!dirMatch) return null;
+      const dir = dirMatch[0].toUpperCase();
+
+      // Extraer solo los números
+      const nums = part.match(/\d+(?:\.\d+)?/g);
+      if (!nums || nums.length === 0) return null;
+
+      const degrees = parseFloat(nums[0]) || 0;
+      const minutes = parseFloat(nums[1]) || 0;
+      const seconds = parseFloat(nums[2]) || 0;
+
+      let decimal = degrees + minutes / 60 + seconds / 3600;
+      if (dir === "S" || dir === "W") decimal = -decimal;
+
+      return decimal;
+    }
+
+    // Intentar dividir por la coma
+    const parts = str.split(",");
+    if (parts.length >= 2) {
+      const lat = parseDMS(parts[0]);
+      const lng = parseDMS(parts.slice(1).join(","));
+
+      if (lat !== null && lng !== null) {
+        return { lat, lng };
+      }
+    }
+
+    return null;
+  }
+
   /**
    * Parses user input into coordinates
    */
   function handleSearch() {
     const inputStr = coordsInput.value.trim();
-    // Regex to match "lat, lng" optionally with spaces, or standard positive/negative numbers
-    const regex = /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/;
+    if (!inputStr) return;
 
-    const match = inputStr.match(regex);
-    if (match) {
-      const lat = parseFloat(match[1]);
-      const lng = parseFloat(match[2]);
+    const coords = parseCoordinateString(inputStr);
 
+    if (coords) {
+      const { lat, lng } = coords;
       if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
         updateLocation(lat, lng);
       } else {
@@ -338,7 +380,7 @@ function initApp() {
       }
     } else {
       alert(
-        'Formato no válido. Usa el formato "Latitud, Longitud" (ej: 40.4168, -3.7038)',
+        'Formato no válido. Usa un formato como "40.7128, -74.0060" o "40°42\'46.08\\"N, 74°00\'21.60\\"W"',
       );
     }
   }
