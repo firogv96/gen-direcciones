@@ -589,7 +589,7 @@ button:active {
   z-index: var(--z-index-panel);
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Separación entre el botón de locate y el menú principal */
+  gap: 8px;
 }
 
 /* Locate botón posicionado encima por defecto via DOM order */
