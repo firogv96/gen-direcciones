@@ -296,7 +296,17 @@ function initApp() {
     }
 
     if (pan) {
-      map.setView([lat, lng], 16);
+      if (
+        window.innerWidth <= 600 &&
+        !panelContainer.classList.contains("collapsed")
+      ) {
+        const panelHeight = panelContainer.offsetHeight;
+        const point = map.project([lat, lng], 16);
+        point.y += panelHeight / 2;
+        map.setView(map.unproject(point, 16), 16);
+      } else {
+        map.setView([lat, lng], 16);
+      }
     }
 
     fetchAddress(lat, lng);
@@ -420,9 +430,31 @@ function initApp() {
       return;
     }
 
+    let didExpand = false;
+    // Auto-expand panel on mobile if collapsed
+    if (collapsePanelBtn && panelContainer.classList.contains("collapsed")) {
+      panelContainer.classList.remove("collapsed");
+      document.body.classList.remove("panel-collapsed");
+      const t = translations[currentLang];
+      collapsePanelBtn.setAttribute("aria-label", t.collapsePanel);
+      collapsePanelBtn.title = t.collapsePanel;
+      didExpand = true;
+    }
+
     const { lat, lng } = e.latlng;
     // Don't pan forcefully on every click to avoid jarring UX, just update marker and address
     updateLocation(lat, lng, false);
+
+    if (didExpand && window.innerWidth <= 600) {
+      setTimeout(() => {
+        const panelHeight = panelContainer.offsetHeight;
+        const point = map.project([lat, lng], map.getZoom());
+        point.y += panelHeight / 2;
+        map.setView(map.unproject(point, map.getZoom()), map.getZoom(), {
+          animate: true,
+        });
+      }, 300); // Wait for the panel CSS transition to finish
+    }
   });
 
   // Button Events
@@ -504,7 +536,9 @@ function initApp() {
       currentMarker = null;
     }
 
-    coordsInput.focus();
+    if (window.innerWidth > 600) {
+      coordsInput.focus();
+    }
   });
 
   // Options Menu Toggle
@@ -572,6 +606,16 @@ function initApp() {
         document.body.classList.add("panel-collapsed");
       } else {
         document.body.classList.remove("panel-collapsed");
+        if (currentMarker && window.innerWidth <= 600) {
+          setTimeout(() => {
+            const panelHeight = panelContainer.offsetHeight;
+            const point = map.project(currentMarker.getLatLng(), map.getZoom());
+            point.y += panelHeight / 2;
+            map.setView(map.unproject(point, map.getZoom()), map.getZoom(), {
+              animate: true,
+            });
+          }, 300); // Wait for the panel CSS transition to finish
+        }
       }
 
       const t = translations[currentLang];
