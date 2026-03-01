@@ -16,6 +16,7 @@ function initApp() {
   const toast = document.getElementById("toast");
   const regionalFormatCb = document.getElementById("regional-format-cb");
   const labelRegional = document.getElementById("label-regional");
+  const infoIconTooltip = document.getElementById("info-icon-tooltip");
 
   // Options Elements
   const optionsBtn = document.getElementById("options-btn");
@@ -113,8 +114,8 @@ function initApp() {
   // Translations
   const translations = {
     es: {
-      pageTitle: "Buscador de Dirección por Coordenadas",
-      headerTitle: "Buscador de Direcciones",
+      pageTitle: "Generador de Direcciones Postales",
+      headerTitle: "Generador de Direcciones Postales",
       headerSubtitle: "Introduce coordenadas o haz clic en el mapa",
       labelCoords: "Coordenadas (Lat, Lng)",
       placeholderInput: "Ej: 40.4168, -3.7038",
@@ -133,10 +134,12 @@ function initApp() {
       langToggle: "English",
       infoAuthor: "Autor:",
       infoVersion: "Versión:",
+      infoTooltip:
+        "Aplica el formato postal específico del país o la información base sin procesamientos locales.",
     },
     en: {
-      pageTitle: "Address Finder from Coordinates",
-      headerTitle: "Address Finder",
+      pageTitle: "Postal Address Generator",
+      headerTitle: "Address Generator",
       headerSubtitle: "Enter coordinates or click on the map",
       labelCoords: "Coordinates (Lat, Lng)",
       placeholderInput: "Ex: 40.4168, -3.7038",
@@ -153,6 +156,8 @@ function initApp() {
       langToggle: "Español",
       infoAuthor: "Author:",
       infoVersion: "Version:",
+      infoTooltip:
+        "Applies the country's specific postal format or the base information returned without local processing.",
     },
   };
 
@@ -175,6 +180,7 @@ function initApp() {
     langToggleText.textContent = t.langToggle;
     infoAuthor.textContent = t.infoAuthor;
     infoVersion.textContent = t.infoVersion;
+    if (infoIconTooltip) infoIconTooltip.title = t.infoTooltip;
 
     // Update theme toggle text based on active language and theme
     const isDark =

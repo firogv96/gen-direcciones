@@ -1,4 +1,4 @@
-# Gen-Direcciones (Buscador de Dirección por Coordenadas)
+# Generador de Direcciones Postales
 
 Una herramienta web sencilla, minimalista y eficiente que permite descubrir la dirección postal correspondiente a unas coordenadas geográficas exactas (latitud y longitud), o simplemente seleccionando interactivamente un punto en el mapa.
 
