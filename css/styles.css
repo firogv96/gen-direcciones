@@ -557,7 +557,7 @@ button:active {
   position: fixed;
   bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(23px);
+  transform: translateX(-50%) translateY(21px);
   background-color: var(--text-primary);
   color: var(--bg-color);
   padding: 10px 20px;
